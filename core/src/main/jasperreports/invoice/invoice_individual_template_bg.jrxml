@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.3.final using JasperReports Library version 6.20.2  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoicetemplate" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a05e8b87-f9a8-4003-a192-ed220365f7a7">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="jprime.year" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="invoiceDate" class="java.lang.String"/>
+	<parameter name="invoiceNumber" class="java.lang.String"/>
+	<parameter name="client" class="java.lang.String"/>
+	<parameter name="clientAddress" class="java.lang.String"/>
+	<parameter name="clientVAT" class="java.lang.String"/>
+	<parameter name="clientEIK" class="java.lang.String"/>
+	<parameter name="invoiceType" class="java.lang.String"/>
+	<parameter name="paymentType" class="java.lang.String"/>
+	<parameter name="totalPriceWithVAT" class="java.math.BigDecimal"/>
+	<parameter name="totalPriceVAT" class="java.math.BigDecimal"/>
+	<parameter name="totalPrice" class="java.math.BigDecimal"/>
+	<field name="passQty" class="java.lang.Integer"/>
+	<field name="price" class="java.math.BigDecimal"/>
+	<field name="totalPrice" class="java.math.BigDecimal"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="idx" class="java.lang.Integer"/>
+	<title>
+		<band height="79" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="111" height="79" uuid="3cb8767b-5f06-4a2c-8c81-f4183590245c"/>
+				<imageExpression><![CDATA["invoice/jprime.png"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="444" y="0" width="111" height="79" uuid="4cf2ccf4-ab49-460e-96b2-b3cc9bfb2eb2"/>
+				<imageExpression><![CDATA["invoice/bg-jug.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="111" y="0" width="341" height="79" uuid="927289db-7d97-4fd9-b290-f55c10aed6dd"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="18"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["jPrime " + $P{jprime.year} + "\nФактура\n"+$P{invoiceType}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="202" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="0" y="9" width="555" height="21" uuid="14e38858-3a92-4bf3-92fe-8382f7bc2bce"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Фактура No. "+ $P{invoiceNumber}+ " / "+$P{invoiceDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="48" width="259" height="86" uuid="897601a9-081b-4d11-a5d8-5f8de6f9141a"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ДжейПрайм Ивентс ООД.
+Адрес: България, 1574 София, ж.к. Христо Смирненски бл. 20, вх. Б. ет. 6, ап. 20
+ЕИК: 203915037
+ДДС: BG203915037
+МОЛ: Иван Стефанов Иванов
+IBAN: BG59BPBI81701605596745]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="316" y="48" width="239" height="114" uuid="157a3b76-4432-48a2-ac59-cc4fc084e637"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{client}+"\nЕГН: 9999999999"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="162" width="23" height="40" uuid="e6602f3e-eee0-442f-a058-3cff9d7ba443"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="23" y="162" width="260" height="40" uuid="a4fc4bcb-5e58-4a83-8199-492b5226e5f1"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Описание]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="283" y="162" width="66" height="40" uuid="a575af82-a14c-42ad-a8b2-b47b9a1467c0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Количество (бр.)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="349" y="162" width="102" height="40" uuid="bf632d29-53f2-4ebc-8225-16892de5d3c5"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Цена]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="451" y="162" width="104" height="40" uuid="39dbeb95-4c20-4bf6-a47d-e12f83c90e75">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Общo]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="23" y="0" width="260" height="20" uuid="a1bf33f5-4626-4f59-8aae-814113e3ab58"/>
+				<box leftPadding="2">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="9"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="283" y="0" width="66" height="20" uuid="f0bc5397-57da-4006-8904-fd5761a5f844"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{passQty}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" pattern="##0.00">
+				<reportElement x="451" y="0" width="104" height="20" uuid="42e38007-17c2-418a-9e48-5086794c4425"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalPrice}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="23" height="20" uuid="0f4619fd-4064-43d0-aee4-b5dc6941aaf3"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idx} + "."]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" pattern="##0.00" isBlankWhenNull="true">
+				<reportElement x="349" y="0" width="102" height="20" uuid="61430619-cb8f-41d9-a2d4-bcbf5cbc501b"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="34" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="a0278313-81ee-4ada-bf83-32e6270053f7"/>
+			</line>
+			<staticText>
+				<reportElement x="349" y="14" width="135" height="20" uuid="d9d191c4-232d-46cf-ba7c-43ded105be26"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Bulgarian Java User Group]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="218" splitType="Stretch">
+			<staticText>
+				<reportElement x="293" y="20" width="159" height="20" uuid="4efc80e9-86ee-4938-ad68-388db04d4dd0"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Данъчна основа]]></text>
+			</staticText>
+			<textField pattern="##0.00">
+				<reportElement x="452" y="20" width="103" height="20" uuid="ff1a2fe3-71d6-4dab-97d1-e64dde416b01"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalPrice}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="293" y="40" width="159" height="20" uuid="4e43fdfb-113f-4f78-8989-ba4044324d79"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ДДС 20%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="293" y="60" width="159" height="20" uuid="4f811097-ad7b-4cd2-892f-76f2dd1d03e8"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Обща цена с ДДС]]></text>
+			</staticText>
+			<textField pattern="##0.00">
+				<reportElement x="452" y="40" width="103" height="20" uuid="cf59dbb9-95fa-4abb-bd91-570ce6ee1d36">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box rightPadding="2">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalPriceVAT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00">
+				<reportElement x="452" y="60" width="103" height="20" uuid="ed857ca4-05cd-4d8f-b9db-fe32eae3ce1b"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalPriceWithVAT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="378" y="128" width="177" height="21" uuid="fcc18fc5-b990-4de7-b315-216096a1777c"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["София,  "+$P{invoiceDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="11" y="64" width="266" height="20" uuid="992001d0-272b-44e1-9cde-63acd7bb28f8"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Тип плащане: "+$P{paymentType}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="44" width="279" height="20" uuid="4ff7a7b6-3b74-4e68-8131-bd5cb122547a"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Всичките цени са в EUR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="149" width="554" height="41" uuid="b3753de2-5698-448e-93de-d330e2b10f6c"/>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Печат и подпис не са задължителни по закон]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

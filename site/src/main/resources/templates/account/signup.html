@@ -1,0 +1,18 @@
+{#include base}
+{#title}jPrime | Signup{/title}
+<h1>Signup</h1>
+<form method="post" action="/account/signup">
+    <div class="field"><label for="firstName">First name</label><input type="text" id="firstName" name="firstName" value="{form.get('firstName') ?: ''}"></div>
+    <div class="field"><label for="lastName">Last name</label><input type="text" id="lastName" name="lastName" value="{form.get('lastName') ?: ''}"></div>
+    <div class="field">
+        <label for="email">E-mail *</label><input type="email" id="email" name="email" value="{form.get('email') ?: ''}" required>
+        {#if errors.get('email')}<div class="error">{errors.get('email')}</div>{/if}
+    </div>
+    <div class="field"><label for="password">Password *</label><input type="password" id="password" name="password" required></div>
+    <div class="field">
+        <label for="cpassword">Confirm password *</label><input type="password" id="cpassword" name="cpassword" required>
+        {#if errors.get('cpassword')}<div class="error">{errors.get('cpassword')}</div>{/if}
+    </div>
+    <p><button type="submit">Signup</button> <a href="/account/login">Back to login</a></p>
+</form>
+{/include}

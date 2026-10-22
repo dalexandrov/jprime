@@ -1,0 +1,145 @@
+{#include base}
+{#title}jPrime {conferenceDates} | Home{/title}
+
+<section class="hero">
+    <h1>jPrime{#if year} {year}{/if}</h1>
+    <p><strong>{conferenceDates}</strong> · Sofia Tech Park, Sofia, Bulgaria</p>
+    {#if !cfpClosed}
+    <p>Submit your proposal before {cfpCloseDate}! <a class="button" href="/cfp">CFP</a></p>
+    {/if}
+    {#if !ticketSalesOpen}
+    <p>Book your seat now! <a class="button" href="#tickets">Buy a ticket</a></p>
+    {/if}
+</section>
+
+<section id="about">
+    <h2>The Conference</h2>
+    <p>jPrime is a conference with talks on Java, various languages on the JVM, mobile, web and best practices.
+        It's run by the Bulgarian Java User Group and backed by the biggest companies in the country.</p>
+    <p>jPrime features a combination of great international speakers along with the best presenters from Bulgaria and
+        the Balkans. It is divided in two tracks and provides great opportunities for learning, hacking, networking and
+        fun.</p>
+    <p><a href="/venue">Read more</a></p>
+    <h3>The conference is organized by</h3>
+    <div class="logos">
+        <a href="https://www.ibm.com"><img src="/images/ibm.png" alt="IBM"></a>
+        <a href="https://www.dxc.com"><img src="/images/dxc.png" alt="DXC"></a>
+        <a href="https://www.sap.com/bulgaria"><img src="/images/sap.png" alt="SAP"></a>
+        <a href="https://www.experian.bg"><img src="/images/experian.png" alt="Experian"></a>
+        <a href="https://www.paysafe.com/"><img src="/images/paysafe.png" alt="Paysafe"></a>
+        <a href="https://www.ocadogroup.com/technology/development-centres/bulgaria"><img src="/images/ocado.png" alt="Ocado"></a>
+        <a href="https://java-bg.org/"><img src="/images/bg-jug.png" alt="Bulgarian Java User Group"></a>
+    </div>
+</section>
+
+{#if featuredSpeakers}
+<section id="speakers">
+    <h2>Our Featured Speakers</h2>
+    <p class="muted">Confirmed speakers coming to jPrime!</p>
+    <div class="grid">
+        {#for speaker in featuredSpeakers}
+        {#include speaker-card speaker=speaker /}
+        {/for}
+    </div>
+    <p><a href="/speakers">All speakers</a></p>
+</section>
+{/if}
+
+<section id="why">
+    <h2>Why Attend</h2>
+    <p>The community driven Java conference in Bulgaria! Come and become part of the community.</p>
+    <dl>
+        <dt><a href="/speakers">Meet Speakers</a></dt>
+        <dd>One of the main goals to go to a conference is not only to learn something new from the sessions, but also
+            to speak with the speakers. At jPrime there is no speaker room, the speakers are outside with all of you, so
+            you can speak with them freely.</dd>
+        <dt><a href="/agenda">Tech Sessions</a></dt>
+        <dd>All sessions are selected via CFP process and voting, there are no sponsor sessions, there are 0 marketing
+            and HR talks. This is not a bla bla conference, it's a practical and awesome conference!</dd>
+        <dt><a href="/agenda">Workshops</a></dt>
+        <dd>Since 2017 we also have workshops. Just bring your laptop - there is no extra cost and no pre-workshop
+            signing, just visit the workshop and participate in the training.</dd>
+        <dt>Free Swags</dt>
+        <dd>We always have a bag of goodies - not only sponsor goodies but also jPrime goodies like shirts, notebooks,
+            flash drives, stickers, etc.</dd>
+        <dt>Networking</dt>
+        <dd>Main part of the conference is the networking, speaking with each other, and sharing experience and
+            knowledge and ... well just have fun.</dd>
+        <dt>Tech Insights</dt>
+        <dd>Get additional insights from the community, the speakers and the sponsors during our lunch breaks, coffee
+            breaks .. or beer breaks ;)</dd>
+    </dl>
+</section>
+
+<section id="tickets">
+    <h2>Book Your Ticket</h2>
+    <div class="grid">
+        {#for ticket in tickets}
+        <div class="card{#if !ticket.available} unavailable{/if}">
+            <h3>{ticket.name}</h3>
+            <p><strong>EUR {ticket.price}</strong><br><span class="muted">{ticket.note}</span></p>
+            <ul>
+                <li>2 days access!</li>
+                <li>28+ awesome talks!</li>
+                <li>Hands-on labs!</li>
+                <li>Lunch box</li>
+                <li>A bag full of goodies</li>
+                <li>Free T-Shirt!</li>
+                <li>Raffle!</li>
+                <li>Beers!</li>
+                <li>Coffee and soft drinks.</li>
+            </ul>
+            {#if ticket.available}
+            <a class="button" href="/tickets">Buy ticket</a>
+            {#else}
+            <span class="muted">Not available</span>
+            {/if}
+        </div>
+        {/for}
+    </div>
+</section>
+
+{#for group in sponsorGroups}
+<section>
+    <h2>{group.sponsorPackage.packageName} Sponsors</h2>
+    <div class="logos">
+        {#for sponsor in group.sponsors}
+        <a href="{sponsor.companyWebsite ?: '#'}"><img src="/image/sponsor/{sponsor.id}" alt="{sponsor.companyName ?: ''}"></a>
+        {/for}
+    </div>
+</section>
+{/for}
+
+{#for group in partnerGroups}
+<section>
+    <h2>{group.title}</h2>
+    <div class="logos">
+        {#for partner in group.partners}
+        <a href="{partner.companyWebsite ?: '#'}"><img src="/image/partner/{partner.id}" alt="{partner.companyName ?: ''}"></a>
+        {/for}
+    </div>
+</section>
+{/for}
+
+<section id="sponsorship">
+    <h2>Become a sponsor!</h2>
+    <div class="grid">
+        {#for offer in sponsorPackages}
+        <div class="card{#if offer.soldOut} unavailable{/if}">
+            <h3>{offer.sponsorPackage.packageName}</h3>
+            <p><strong>{offer.price}</strong></p>
+            <ul>
+                {#for benefit in offer.benefits}
+                <li>{benefit}</li>
+                {/for}
+            </ul>
+            {#if offer.soldOut}
+            <span class="muted">Sold out</span>
+            {#else}
+            <a class="button" href="mailto:conference@jprime.io?subject={offer.subject.url}">Sign up now</a>
+            {/if}
+        </div>
+        {/for}
+    </div>
+</section>
+{/include}

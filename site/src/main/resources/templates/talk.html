@@ -1,0 +1,27 @@
+{#include base}
+{#title}jPrime | {submission.title}{/title}
+<article>
+    <h1>{submission.title}</h1>
+    <p class="muted">{talk.startTime.fmt('HH:mm')} - {talk.endTime.fmt('HH:mm')} on {talk.startTime.fmt('EEEE')}
+        {#if talk.hall} · {talk.hall.name}{/if}</p>
+
+    <div class="grid">
+        {#include speaker-card speaker=submission.speaker /}
+        {#if submission.coSpeaker}
+        {#include speaker-card speaker=submission.coSpeaker /}
+        {/if}
+    </div>
+
+    <h2>Abstract</h2>
+    <p>{submission.description.paragraphs}</p>
+    <p><strong>Talk level:</strong> {submission.level ?: ''} · <strong>Type:</strong> {submission.typeOrDefault}</p>
+
+    <h2>About the speaker{#if submission.coSpeaker}s{/if}</h2>
+    <h3>{submission.speaker.name}</h3>
+    {#if submission.speaker.bio}<p>{submission.speaker.bio.paragraphs}</p>{/if}
+    {#if submission.coSpeaker}
+    <h3>{submission.coSpeaker.name}</h3>
+    {#if submission.coSpeaker.bio}<p>{submission.coSpeaker.bio.paragraphs}</p>{/if}
+    {/if}
+</article>
+{/include}

@@ -1,0 +1,49 @@
+{#include base}
+{#title}jPrime | Agenda{/title}
+<h1>Agenda</h1>
+{#if !branch.agendaPublished}
+<p>The agenda is not yet available.</p>
+{#else}
+<p>The agenda for jPrime {branch.year} is now available!</p>
+<p>You can track the agenda from your mobile phone with our app available at <a href="/app">https://jprime.io/app</a>
+    or in the <a href="https://play.google.com/store/apps/details?id=com.jprime.mobile">Google Play Store</a>.</p>
+{#for day in days}
+<section>
+    <h2>{day.date.fmt('EEEE (dd/MM/yyyy)')}</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Time</th>
+            {#for caption in hallCaptions}<th>{caption}</th>{/for}
+        </tr>
+        </thead>
+        <tbody>
+        {#for row in day.rows}
+        <tr>
+            <td>{row.start.fmt('HH:mm')}{#if row.end} - {row.end.fmt('HH:mm')}{/if}</td>
+            {#if row.common}
+            <td class="common" colspan="{hallCaptions.size}">{row.common.title ?: ''}</td>
+            {#else}
+            {#for cell in row.cells}
+            <td>
+                {#if cell}
+                {#if cell.submission}
+                <a href="/agenda/{cell.id}">{cell.submission.title}</a><br>
+                <span class="muted">{cell.submission.speaker.name}{#if cell.submission.coSpeaker} &amp; {cell.submission.coSpeaker.name}{/if}</span>
+                {#if cell.submission.typeOrDefault.key == 'DEEP_DIVE'}<br><em>(Deep Dive)</em>{/if}
+                {#if cell.submission.typeOrDefault.key == 'WORKSHOP'}<br><em>(Workshop)</em>{/if}
+                {#else}
+                {cell.title ?: ''}
+                {/if}
+                {/if}
+            </td>
+            {/for}
+            {/if}
+        </tr>
+        {/for}
+        </tbody>
+    </table>
+</section>
+{/for}
+{/if}
+{/include}

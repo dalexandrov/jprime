@@ -1,0 +1,1 @@
+call ExecuteStatementIfTableExists('Submission', 'update Submission set branch = ''YEAR_2015'' where branch is null');

@@ -1,0 +1,13 @@
+{#include base}
+{#title}jPrime | Raffle{/title}
+<h1>I am here!</h1>
+<p>Register your participation in the raffle.</p>
+{#if message}<div class="alert error">{message}</div>{/if}
+<form method="post" action="/qr/tuk">
+    <div class="field"><label for="id">Enter your ID (printed on the badge)</label><input type="text" id="id" name="id" inputmode="numeric"></div>
+    <p><strong>OR</strong> write your name and company (optional) exactly as on the badge!</p>
+    <div class="field"><label for="name">Name</label><input type="text" id="name" name="name"></div>
+    <div class="field"><label for="company">Company</label><input type="text" id="company" name="company"></div>
+    <p><button type="submit">Submit</button></p>
+</form>
+{/include}

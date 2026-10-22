@@ -1,0 +1,12 @@
+call ExecuteStatementIfTableExists('Article', 'ALTER TABLE Article CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('Session', 'ALTER TABLE Session CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('tags_articles', 'ALTER TABLE tags_articles convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('Tag', 'ALTER TABLE Tag CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('User', 'ALTER TABLE User convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('VenueHall', 'ALTER TABLE VenueHall convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('Visitor', 'ALTER TABLE Visitor convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('Registrant', 'ALTER TABLE Registrant convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('VisitorJPro', 'ALTER TABLE VisitorJPro convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('ResetPasswordToken', 'ALTER TABLE ResetPasswordToken convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('Submission', 'ALTER TABLE Submission convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');
+call ExecuteStatementIfTableExists('Partner', 'ALTER TABLE Partner convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci');

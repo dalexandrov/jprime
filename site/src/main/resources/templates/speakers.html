@@ -1,0 +1,13 @@
+{#include base}
+{#title}jPrime | Speakers{/title}
+<h1>Speakers</h1>
+{#if speakers}
+<div class="grid">
+    {#for speaker in speakers}
+    {#include speaker-card speaker=speaker /}
+    {/for}
+</div>
+{#else}
+<p>The speakers will be announced soon.</p>
+{/if}
+{/include}

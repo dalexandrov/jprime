@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{#insert title}jPrime{/}</title>
+    <meta name="description" content="{#insert description}jPrime is a conference with talks on Java, various languages on the JVM, mobile, web and best practices.{/}">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/site.css">
+    {#insert head}{/}
+</head>
+<body>
+<header class="site-header">
+    <div class="container">
+        <a class="brand" href="/"><img src="/images/jprime-small.png" alt="jPrime"></a>
+        <nav class="main-nav" aria-label="Main">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/cfp">Call for papers</a></li>
+                <li><a href="/tickets">Tickets</a></li>
+                <li><a href="/team">Team</a></li>
+                <li><a href="/venue">Useful info</a></li>
+                <li><a href="/speakers">Speakers</a></li>
+                <li><a href="/agenda">Agenda</a></li>
+                {#for tag in inject:site.menuTags}
+                <li><a href="/nav/{tag.name.url}">{tag.name}</a></li>
+                {/for}
+                {#if inject:site.loggedIn}
+                <li><a href="/account/logout">Logout</a></li>
+                {/if}
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    {#insert}{/}
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="columns">
+            <div>
+                <strong>Location</strong><br>
+                <a href="https://goo.gl/maps/67NtDSTADcG2">Tsarigradsko Shosse 111B, Sofia, Bulgaria</a>
+            </div>
+            <div>
+                <strong>Sponsors / Tickets / Questions</strong><br>
+                <a href="mailto:conference@jprime.io">conference@jprime.io</a>
+            </div>
+            <div>
+                <strong>Contact us</strong><br>
+                +359 887 749 325
+            </div>
+            <div>
+                <strong>Follow</strong><br>
+                <a href="https://www.facebook.com/jprimeConf/">Facebook</a> ·
+                <a href="https://x.com/bgjug">X</a> ·
+                <a href="https://www.youtube.com/user/BulgarianJUG/videos">YouTube</a>
+            </div>
+        </div>
+        <p>Copyright jPrime 2015-{inject:site.copyrightYear} · <a href="/privacy-policy">Privacy policy</a></p>
+    </div>
+</footer>
+{#insert scripts}{/}
+</body>
+</html>

@@ -1,0 +1,39 @@
+{! Fields of one speaker in the CFP form. Params: role (speaker|coSpeaker), firstName, lastName, email, headline, twitter, bsky, bio, err (errors of this speaker keyed by field) !}
+<div class="field">
+    <label for="{role}FirstName">First name</label>
+    <input type="text" id="{role}FirstName" name="{role}FirstName" value="{firstName ?: ''}">
+    {#if err.get('firstName')}<div class="error">{err.get('firstName')}</div>{/if}
+</div>
+<div class="field">
+    <label for="{role}LastName">Last name</label>
+    <input type="text" id="{role}LastName" name="{role}LastName" value="{lastName ?: ''}">
+    {#if err.get('lastName')}<div class="error">{err.get('lastName')}</div>{/if}
+</div>
+<div class="field">
+    <label for="{role}Email">E-mail</label>
+    <input type="email" id="{role}Email" name="{role}Email" value="{email ?: ''}">
+    {#if err.get('email')}<div class="error">{err.get('email')}</div>{/if}
+</div>
+<div class="field">
+    <label for="{role}Headline">Headline (e.g. "Java Champion, Developer at ACME")</label>
+    <input type="text" id="{role}Headline" name="{role}Headline" value="{headline ?: ''}">
+</div>
+<div class="field">
+    <label for="{role}Twitter">X</label>
+    <input type="text" id="{role}Twitter" name="{role}Twitter" value="{twitter ?: ''}" placeholder="@handle">
+</div>
+<div class="field">
+    <label for="{role}Bsky">Bluesky profile</label>
+    <input type="text" id="{role}Bsky" name="{role}Bsky" value="{bsky ?: ''}" maxlength="100"
+           placeholder="https://bsky.app/profile/you.bsky.social"
+           pattern="^https:\/\/[-a-zA-Z0-9@:%._\+~#=]\{1,256}\.[a-zA-Z0-9()]\{1,6}\/profile\/[-a-zA-Z0-9()@:%_\+.~#?&=]*$">
+</div>
+<div class="field">
+    <label for="{role}Bio">Bio</label>
+    <textarea id="{role}Bio" name="{role}Bio" rows="5">{bio ?: ''}</textarea>
+    {#if err.get('bio')}<div class="error">{err.get('bio')}</div>{/if}
+</div>
+<div class="field">
+    <label for="{role}Image">Picture (required for new speakers)</label>
+    <input type="file" id="{role}Image" name="{role}Image" accept="image/*">
+</div>

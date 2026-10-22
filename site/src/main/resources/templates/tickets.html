@@ -1,0 +1,88 @@
+{#include base}
+{#title}jPrime | Buy conference tickets{/title}
+<h1>Buy conference tickets</h1>
+<ul>
+    <li>Early bird ticket: <strong>EUR {earlyBirdPrice}</strong> (until {cfpCloseDate})</li>
+    <li>Regular ticket: <strong>EUR {regularPrice}</strong></li>
+    <li>Student ticket: <strong>EUR {studentPrice}</strong></li>
+</ul>
+<p class="muted">You will receive a proforma invoice by e-mail. The tickets are sent to the visitors a few days before the
+    event, once the payment is received.</p>
+
+{#if errors}
+<div class="alert error">
+    {#for e in errors.values}<div>{e}</div>{/for}
+</div>
+{/if}
+
+<form method="post" action="/tickets">
+    <fieldset>
+        <legend>Visitors</legend>
+        <div id="visitors">
+            {#for row in form.rows}
+            <div class="visitor">
+                <div class="field">
+                    <label>Visitor name</label>
+                    <input type="text" name="visitorName" value="{row.name}">
+                </div>
+                <div class="field">
+                    <label>Visitor e-mail</label>
+                    <input type="email" name="visitorEmail" value="{row.email}">
+                </div>
+                <div class="field">
+                    <label>Visitor company</label>
+                    <input type="text" name="visitorCompany" value="{row.company}">
+                </div>
+                <hr>
+            </div>
+            {/for}
+        </div>
+        <button type="button" class="secondary" id="addVisitor">Add visitor</button>
+        <button type="button" class="secondary" id="removeVisitor">Remove last</button>
+    </fieldset>
+
+    <p>
+        <label><input type="checkbox" id="student" name="student" value="true"{#if form.student} checked{/if}> I am a student</label>
+        <label><input type="checkbox" id="company" name="company" value="true"{#if form.company} checked{/if}> Issue a company VAT invoice</label>
+    </p>
+
+    <fieldset id="invoice"{#if !form.company} hidden{/if}>
+        <legend>Invoice information</legend>
+        <div class="field"><label for="name">Company name</label><input type="text" id="name" name="name" value="{form.name ?: ''}"></div>
+        <div class="field"><label for="address">Address</label><input type="text" id="address" name="address" value="{form.address ?: ''}"></div>
+        <div class="field"><label for="vatNumber">VAT registration number</label><input type="text" id="vatNumber" name="vatNumber" value="{form.vatNumber ?: ''}"></div>
+        <div class="field"><label for="eik">Unified Identity Code (EIK)</label><input type="text" id="eik" name="eik" value="{form.eik ?: ''}"></div>
+        <div class="field"><label for="mol">Accountable person (MOL)</label><input type="text" id="mol" name="mol" value="{form.mol ?: ''}"></div>
+        <div class="field"><label for="email">Invoice e-mail</label><input type="email" id="email" name="email" value="{form.email ?: ''}"></div>
+    </fieldset>
+
+    {#include captcha-field error=errors.get('captcha') /}
+
+    <p>
+        <label><input type="checkbox" name="acceptTerms" value="true"{#if form.acceptTerms} checked{/if} required>
+            I agree with the <a href="/privacy-policy" target="_blank">privacy policy</a></label>
+    </p>
+    <p><button type="submit">Proceed</button></p>
+</form>
+{#scripts}
+<script>
+    (function () {
+        var visitors = document.getElementById('visitors');
+        document.getElementById('addVisitor').addEventListener('click', function () {
+            var copy = visitors.querySelector('.visitor').cloneNode(true);
+            copy.querySelectorAll('input').forEach(function (i) { i.value = ''; });
+            visitors.appendChild(copy);
+        });
+        document.getElementById('removeVisitor').addEventListener('click', function () {
+            var all = visitors.querySelectorAll('.visitor');
+            if (all.length > 1) { all[all.length - 1].remove(); }
+        });
+        var student = document.getElementById('student');
+        var company = document.getElementById('company');
+        student.addEventListener('change', function () { if (student.checked) { company.checked = false; } toggle(); });
+        company.addEventListener('change', function () { if (company.checked) { student.checked = false; } toggle(); });
+        function toggle() { document.getElementById('invoice').hidden = !company.checked; }
+    })();
+</script>
+{/scripts}
+{/include}

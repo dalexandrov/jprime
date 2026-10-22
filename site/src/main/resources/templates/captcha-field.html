@@ -1,0 +1,6 @@
+<div class="field">
+    <label for="captcha">Please enter the sum</label>
+    <img src="/captcha-image" alt="captcha" width="150" height="30"><br>
+    <input type="text" id="captcha" name="captcha" autocomplete="off" inputmode="numeric" style="max-width: 150px" required>
+    {#if error}<div class="error">{error}</div>{/if}
+</div>

@@ -1,0 +1,11 @@
+{#include base}
+{#title}jProfessionals | Raffle{/title}
+<h1>I am here!</h1>
+<p>Register your participation in the jProfessionals raffle.</p>
+{#if message}<div class="alert error">{message}</div>{/if}
+<form method="post" action="/qr/tukjpro">
+    <div class="field"><label for="name">Name (as in your registration)</label><input type="text" id="name" name="name" required></div>
+    <div class="field"><label for="email">E-mail (optional)</label><input type="email" id="email" name="email"></div>
+    <p><button type="submit">Submit</button></p>
+</form>
+{/include}

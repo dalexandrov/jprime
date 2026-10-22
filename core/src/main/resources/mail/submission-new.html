@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>There is a new talk proposal submitted!</p>
+<p>
+    <strong>Session title:</strong> {title}<br/>
+    <strong>Session abstract:</strong> {description}<br/>
+    <strong>Session Level:</strong> {level}<br/>
+    <strong>Session type:</strong> {type}<br/>
+    <strong>Speaker:</strong> {speakerName}<br/>
+    <strong>Speaker bio:</strong> {speakerBio}<br/>
+</p>
+{#if coSpeakerName}
+<p>
+    <strong>Co-Speaker:</strong> {coSpeakerName}<br/>
+    <strong>Co-Speaker bio:</strong> {coSpeakerBio}<br/>
+</p>
+{/if}
+</body>
+</html>

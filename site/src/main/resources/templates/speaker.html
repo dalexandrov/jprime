@@ -1,0 +1,13 @@
+{#include base}
+{#title}jPrime | {speaker.firstName ?: ''} {speaker.lastName ?: ''}{/title}
+<article>
+    <h1>{speaker.firstName ?: ''} {speaker.lastName ?: ''}</h1>
+    <img class="photo" src="/image/speaker/{speaker.id}" alt="{speaker.name}" width="280">
+    {#if speaker.headline}<p class="muted">{speaker.headline}</p>{/if}
+    <p>
+        {#if speaker.twitterHandle}<a href="https://x.com/{speaker.twitterHandle}">X</a>{/if}
+        {#if speaker.bsky}<a href="{speaker.bsky}">Bluesky</a>{/if}
+    </p>
+    {#if speaker.bio}<p>{speaker.bio.paragraphs}</p>{/if}
+</article>
+{/include}

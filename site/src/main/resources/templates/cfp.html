@@ -1,0 +1,87 @@
+{#include base}
+{#title}jPrime | Submit a proposal{/title}
+<h1>Submit your proposal</h1>
+<p>The conference dates are <strong>{conferenceDates}</strong>.</p>
+<p>Call for papers closes on <strong>{cfpCloseDate}</strong>!</p>
+
+{#if errors}
+<div class="alert error">Please correct the errors below.</div>
+{/if}
+
+<form method="post" action="/cfp" enctype="multipart/form-data">
+    <fieldset>
+        <legend>Session info</legend>
+        <div class="field">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" maxlength="255" value="{form.title ?: ''}" required>
+            {#if errors.get('title')}<div class="error">{errors.get('title')}</div>{/if}
+        </div>
+        <div class="field">
+            <label for="description">Abstract</label>
+            <textarea id="description" name="description" rows="8" maxlength="10000" required>{form.description ?: ''}</textarea>
+            {#if errors.get('description')}<div class="error">{errors.get('description')}</div>{/if}
+        </div>
+        <div class="field">
+            <label for="level">Session level</label>
+            <p class="muted">We aim to offer a balanced mix of sessions across all levels, so selecting the correct level
+                is important:</p>
+            <ul class="muted">
+                <li><b>Beginner</b> - designed for junior developers or those coming from other programming languages
+                    and technologies. These sessions serve as introductions, providing foundational knowledge and
+                    context to help participants get started.</li>
+                <li><b>Intermediate</b> - targeted at mid-level developers with Java experience who may be new to the
+                    specific framework, library, or technology being discussed.</li>
+                <li><b>Advanced</b> - intended for developers already familiar with the framework, library, or
+                    technology. These sessions dive into hidden complexities, advanced techniques, internal insights,
+                    and expert tips.</li>
+            </ul>
+            <select id="level" name="level">
+                {#for level in levels}
+                <option value="{level.key}"{#if form.level == level.key} selected{/if}>{level.label}</option>
+                {/for}
+            </select>
+        </div>
+        <div class="field">
+            <label for="type">Session type</label>
+            <ul class="muted">
+                <li><b>Conference Talk</b> - a live session where speakers share insights through presentations, demos,
+                    or live coding.</li>
+                <li><b>Workshop</b> - a hands-on session with guided steps where participants follow along on their
+                    laptops.</li>
+                <li><b>Deep Dive</b> - a longer, advanced session with detailed explanations, discussions, and time for
+                    audience questions.</li>
+            </ul>
+            <select id="type" name="type">
+                {#for type in types}
+                <option value="{type.key}"{#if form.type == type.key} selected{/if}>{type.label}</option>
+                {/for}
+            </select>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Speaker</legend>
+        {#include speaker-fields role='speaker' firstName=form.speakerFirstName lastName=form.speakerLastName email=form.speakerEmail headline=form.speakerHeadline twitter=form.speakerTwitter bsky=form.speakerBsky bio=form.speakerBio err=speakerErrors /}
+    </fieldset>
+
+    <p>
+        <label><input type="checkbox" id="withCoSpeaker" name="withCoSpeaker" value="true"{#if form.withCoSpeaker} checked{/if}>
+            Add a co-speaker</label>
+    </p>
+    <fieldset id="coSpeaker"{#if !form.withCoSpeaker} hidden{/if}>
+        <legend>Co-speaker</legend>
+        {#include speaker-fields role='coSpeaker' firstName=form.coSpeakerFirstName lastName=form.coSpeakerLastName email=form.coSpeakerEmail headline=form.coSpeakerHeadline twitter=form.coSpeakerTwitter bsky=form.coSpeakerBsky bio=form.coSpeakerBio err=coSpeakerErrors /}
+    </fieldset>
+
+    {#include captcha-field error=errors.get('captcha') /}
+
+    <p><button type="submit">Submit</button></p>
+</form>
+{#scripts}
+<script>
+    document.getElementById('withCoSpeaker').addEventListener('change', function (e) {
+        document.getElementById('coSpeaker').hidden = !e.target.checked;
+    });
+</script>
+{/scripts}
+{/include}

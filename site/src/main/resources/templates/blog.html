@@ -1,0 +1,19 @@
+{#include base}
+{#title}jPrime | {title}{/title}
+<h1>{title}</h1>
+{#for article in articles.content}
+<article class="card">
+    <h2><a href="/nav/article/{article.id}">{article.title}</a></h2>
+    <div class="article-body">{article.text.raw}</div>
+    <p>
+        {#for tag in article.tags}
+        <a href="/nav/{tag.name.url}">{tag.name}</a>{#if tag_hasNext}, {/if}
+        {/for}
+    </p>
+</article>
+{/for}
+<div class="pagination">
+    {#if articles.hasPrevious}<a href="{baseUrl}?page={articles.previousPage}">&laquo; previous</a>{/if}
+    {#if articles.hasNext}<a href="{baseUrl}?page={articles.nextPage}">next &raquo;</a>{/if}
+</div>
+{/include}

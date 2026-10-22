@@ -1,0 +1,12 @@
+{#include base}
+{#title}jPrime | {article.title}{/title}
+<article>
+    <h1>{article.title}</h1>
+    <div class="article-body">{article.text.raw}</div>
+    <p>
+        {#for tag in article.tags}
+        <a href="/nav/{tag.name.url}">{tag.name}</a>{#if tag_hasNext}, {/if}
+        {/for}
+    </p>
+</article>
+{/include}

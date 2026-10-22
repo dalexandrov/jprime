@@ -1,0 +1,64 @@
+# jPrime reverse proxy - Caddy gets and renews Let's Encrypt certificates automatically.
+# The domains come from deploy/.env (SITE_DOMAIN, ADMIN_DOMAIN); their DNS A/AAAA records must point at this server
+# and ports 80 + 443 must be open before the first start.
+{
+	email {$ACME_EMAIL}
+}
+
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	# Quarkus management endpoints (health, metrics, openapi) stay internal
+	@internal path /q/*
+	respond @internal 404
+	log {
+		output stdout
+		format console
+	}
+}
+
+# ---------------------------------------------------------------- public site
+{$SITE_DOMAIN} {
+	import common
+	header X-Frame-Options "SAMEORIGIN"
+	request_body {
+		max_size 20MB
+	}
+	# The registration-desk / check-in apps still call https://jprime.io/api/visitor|ticket|speaker/... -
+	# these endpoints now live in the admin app (HTTP Basic, role ADMIN)
+	@checkin path /api/visitor/* /api/ticket/* /api/speaker /api/speaker/*
+	reverse_proxy @checkin admin:8081
+	reverse_proxy site:8080 {
+		health_uri /q/health/live
+		health_interval 30s
+	}
+}
+
+# www.jprime.io -> jprime.io (uncomment once the www DNS record points at this server)
+#www.{$SITE_DOMAIN} {
+#	redir https://{$SITE_DOMAIN}{uri} permanent
+#}
+
+# ---------------------------------------------------------------- admin (API + React UI + check-in API)
+{$ADMIN_DOMAIN} {
+	import common
+	header {
+		X-Frame-Options "DENY"
+		X-Robots-Tag "noindex, nofollow"
+	}
+	# Optional IP allow-list (ADMIN_ALLOWED_IPS in .env); the default allows everyone
+	@blocked not remote_ip {$ADMIN_ALLOWED_IPS}
+	respond @blocked 403
+	request_body {
+		max_size 20MB
+	}
+	reverse_proxy admin:8081 {
+		health_uri /q/health/live
+		health_interval 30s
+	}
+}

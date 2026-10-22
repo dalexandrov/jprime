@@ -1,0 +1,13 @@
+**/target/
+**/node_modules/
+admin-ui/dist/
+admin/node/
+.git/
+.idea/
+.vscode/
+**/*.iml
+**/.DS_Store
+.quarkus/
+deploy/
+docker-compose.yml
+*.zip

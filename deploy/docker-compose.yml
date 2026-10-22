@@ -1,0 +1,164 @@
+# =====================================================================================================
+# jPrime - production stack
+#
+#   caddy  (80/443, automatic HTTPS) ─┬─> site   :8080   https://${SITE_DOMAIN}
+#                                     └─> admin  :8081   https://${ADMIN_DOMAIN}   (API + React UI)
+#   site, admin ──> db (MySQL 8.4, private network only)
+#   backup: daily mysqldump into ./backups
+#
+# First start (on the server, inside this deploy/ directory):
+#   cp .env.example .env && nano .env          # fill in every "change-me"
+#   docker compose up -d --build
+#
+# See deploy/README.md for updates, backups, restoring the production dump and troubleshooting.
+# =====================================================================================================
+name: jprime
+
+x-app: &app
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+  networks: [backend, frontend]
+  logging: &logging
+    driver: json-file
+    options: { max-size: "20m", max-file: "5" }
+
+x-app-env: &app-env
+  TZ: ${TZ:-Europe/Sofia}
+  # ---- database ----
+  QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db:3306/jprime?useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_general_ci&useSSL=false&allowPublicKeyRetrieval=true
+  QUARKUS_DATASOURCE_USERNAME: ${MYSQL_USER:-jprime}
+  QUARKUS_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+  # ---- mail ----
+  QUARKUS_MAILER_HOST: ${MAIL_HOST:-mail.jprime.io}
+  QUARKUS_MAILER_PORT: ${MAIL_PORT:-465}
+  QUARKUS_MAILER_USERNAME: ${MAIL_USERNAME:-conference@jprime.io}
+  QUARKUS_MAILER_PASSWORD: ${MAIL_PASSWORD:-}
+  QUARKUS_MAILER_FROM: ${MAIL_FROM:-conference@jprime.io}
+  QUARKUS_MAILER_MOCK: ${MAIL_MOCK:-false}
+  JPRIME_MAIL_TEST_ADDRESS: ${MAIL_TEST_ADDRESS:-}
+  # ---- links / payments ----
+  JPRIME_SITE_URL: https://${SITE_DOMAIN:?set SITE_DOMAIN in .env}
+  JPRIME_RESET_PASSWORD_URL: https://${SITE_DOMAIN}/account/new-password?tokenId=
+  JPRIME_EPAY_KEY: ${EPAY_KEY:-}
+  # ---- behind the Caddy reverse proxy: trust X-Forwarded-* (scheme, host, client IP) ----
+  QUARKUS_HTTP_PROXY_PROXY_ADDRESS_FORWARDING: "true"
+  QUARKUS_HTTP_PROXY_ALLOW_X_FORWARDED: "true"
+  QUARKUS_HTTP_PROXY_ENABLE_FORWARDED_HOST: "true"
+  # ---- JVM ----
+  JAVA_OPTS: >-
+    -XX:MaxRAMPercentage=75 -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError
+    -Djava.awt.headless=true -Dfile.encoding=UTF-8
+    -Djava.util.logging.manager=org.jboss.logmanager.LogManager
+
+services:
+  # ------------------------------------------------------------------------------------------- database
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Europe/Sofia}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: jprime           # fixed: Flyway uses default-schema=jprime
+      MYSQL_USER: ${MYSQL_USER:-jprime}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d:ro
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    logging: *logging
+
+  # ------------------------------------------------------------------------------------------- public site
+  site:
+    <<: *app
+    image: jprime-site:latest
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: site
+    environment:
+      <<: *app-env
+      QUARKUS_HTTP_AUTH_SESSION_ENCRYPTION_KEY: ${SITE_SESSION_KEY:?set SITE_SESSION_KEY in .env}
+      JPRIME_CAPTCHA_SECRET: ${CAPTCHA_SECRET:?set CAPTCHA_SECRET in .env}
+    mem_limit: ${SITE_MEM_LIMIT:-1g}
+    expose: ["8080"]
+
+  # ------------------------------------------------------------------------------------------- admin
+  admin:
+    <<: *app
+    image: jprime-admin:latest
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: admin
+    environment:
+      <<: *app-env
+      QUARKUS_HTTP_AUTH_SESSION_ENCRYPTION_KEY: ${ADMIN_SESSION_KEY:?set ADMIN_SESSION_KEY in .env}
+      JPRIME_ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      JPRIME_ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+    mem_limit: ${ADMIN_MEM_LIMIT:-1g}
+    expose: ["8081"]
+    # Both apps run Flyway at start-up; Flyway locks, but starting the admin after the site avoids the wait
+    depends_on:
+      db:
+        condition: service_healthy
+      site:
+        condition: service_started
+
+  # ------------------------------------------------------------------------------------------- reverse proxy
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"     # HTTP/3
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+      ADMIN_DOMAIN: ${ADMIN_DOMAIN:?set ADMIN_DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:-conference@jprime.io}
+      ADMIN_ALLOWED_IPS: ${ADMIN_ALLOWED_IPS:-0.0.0.0/0 ::/0}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [site, admin]
+    networks: [frontend]
+    logging: *logging
+
+  # ------------------------------------------------------------------------------------------- backups
+  backup:
+    image: mysql:8.4
+    restart: unless-stopped
+    entrypoint: ["/bin/bash", "/scripts/backup-loop.sh"]
+    environment:
+      TZ: ${TZ:-Europe/Sofia}
+      MYSQL_HOST: db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      BACKUP_HOUR: ${BACKUP_HOUR:-3}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes:
+      - ./scripts/backup-loop.sh:/scripts/backup-loop.sh:ro
+      - ./backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [backend]
+    logging: *logging
+
+networks:
+  frontend: {}
+  backend:
+    internal: true     # the database has no route to/from the outside world
+
+volumes:
+  mysql_data: {}
+  caddy_data: {}       # TLS certificates - keep it!
+  caddy_config: {}

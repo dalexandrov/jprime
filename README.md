@@ -152,10 +152,6 @@ cd /opt/jprime && git pull
 cd deploy && docker compose up -d --build site admin
 ```
 
-To pull pre-built images instead of building on the server, enable `.github/workflows/docker.yml` (pushes
-`ghcr.io/<owner>/jprime-site|admin` on every push to `main`), set `IMAGE_PREFIX=ghcr.io/dalexandrov/jprime` in
-`.env`, and run `docker compose pull site admin && docker compose up -d site admin`.
-
 ### Day-to-day
 
 ```bash

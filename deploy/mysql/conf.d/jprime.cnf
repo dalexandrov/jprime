@@ -1,0 +1,18 @@
+[mysqld]
+# Same encoding as the legacy database
+character-set-server = utf8mb4
+collation-server     = utf8mb4_unicode_ci
+# Flyway script V1.3 creates stored procedures as the (non-SUPER) application user; with binary logging on
+# MySQL refuses that unless this is set
+log-bin-trust-function-creators = 1
+# Speaker photos and sponsor logos are stored as BLOBs
+max_allowed_packet = 64M
+# Modest footprint for a single small server - raise on a bigger machine
+innodb_buffer_pool_size = 256M
+skip-name-resolve
+
+[client]
+default-character-set = utf8mb4
+
+[mysqldump]
+max_allowed_packet = 64M

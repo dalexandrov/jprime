@@ -98,13 +98,77 @@ java -jar site/target/quarkus-app/quarkus-run.jar
 java -jar admin/target/quarkus-app/quarkus-run.jar
 ```
 
-Container images: `site/src/main/docker/Dockerfile.jvm`, `admin/src/main/docker/Dockerfile.jvm`. Note that the
-captcha, image resizing and JasperReports need fonts (`fontconfig` + a TTF font such as DejaVu) in the runtime
-image and `-Djava.awt.headless=true`.
+`site|admin/src/main/docker/Dockerfile.jvm` are plain Quarkus images for a pre-built jar. For a server, use the
+Docker setup below instead.
 
 The admin UI can also be deployed on its own (`npm run build` → static files in `admin-ui/dist`) behind a reverse
 proxy that forwards `/api` and `/j_security_check` to the admin app on the same origin (the session cookie is
 `SameSite=Strict`).
+
+## Deployment (Docker)
+
+The root `Dockerfile` builds both apps from source (the admin image bundles the React UI; the runtime images contain
+the fonts that the captcha, image resizing and JasperReports need). `deploy/docker-compose.yml` runs the whole stack:
+
+```
+Internet ──80/443──> caddy ──┬── jprime.io        ──> site  :8080
+                    (HTTPS)  │     /api/visitor|ticket|speaker/** ──> admin  (legacy check-in apps)
+                             └── admin.jprime.io  ──> admin :8081  (API + React UI)
+                                 site, admin ──> db (MySQL 8.4, internal network only)
+                                 backup ──> daily mysqldump into deploy/backups/
+```
+
+**Server requirements:** Linux with Docker Engine 24+ and the Compose plugin, ≥ 2 GB RAM (4 GB to build on the
+server), DNS `A`/`AAAA` records for both domains pointing at it, and ports 80/tcp, 443/tcp, 443/udp open.
+No JDK, Maven or Node is needed.
+
+### First deployment
+
+```bash
+git clone https://github.com/dalexandrov/jprime.git /opt/jprime
+cd /opt/jprime/deploy
+
+./scripts/init-env.sh              # creates .env with random DB passwords, session keys, captcha secret, admin password
+nano .env                          # set SITE_DOMAIN, ADMIN_DOMAIN, ACME_EMAIL, MAIL_PASSWORD
+                                   # (staging: MAIL_TEST_ADDRESS=you@example.com or MAIL_MOCK=true)
+
+# optional but recommended: start from the production data
+docker compose up -d db
+./scripts/restore-db.sh ~/jprime-prod.sql.gz
+
+docker compose up -d --build       # first build takes a few minutes
+docker compose ps                  # everything "healthy" / "running"
+docker compose logs -f site admin  # wait for "Listening on: http://0.0.0.0:8080" / ":8081"
+```
+
+Then open `https://<SITE_DOMAIN>` and `https://<ADMIN_DOMAIN>` (login `admin` / the `ADMIN_PASSWORD` from `.env`).
+Caddy obtains the Let's Encrypt certificates on the first request. Without a dump, Flyway creates an empty schema
+with the 2015–2025 branches; with the production dump it only validates it (see "Schema compatibility").
+
+### Updating
+
+```bash
+cd /opt/jprime && git pull
+cd deploy && docker compose up -d --build site admin
+```
+
+To pull pre-built images instead of building on the server, enable `.github/workflows/docker.yml` (pushes
+`ghcr.io/<owner>/jprime-site|admin` on every push to `main`), set `IMAGE_PREFIX=ghcr.io/dalexandrov/jprime` in
+`.env`, and run `docker compose pull site admin && docker compose up -d site admin`.
+
+### Day-to-day
+
+```bash
+docker compose exec backup bash /scripts/backup-loop.sh now               # backup now (daily backups run at BACKUP_HOUR)
+./scripts/restore-db.sh backups/jprime-YYYYMMDD-HHMMSS.sql.gz             # restore a backup
+docker compose logs -f --tail=200 site                                    # logs
+docker compose exec db sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" jprime'   # SQL shell
+docker compose down                                                       # stop (data stays in the mysql_data volume)
+```
+
+Copy `deploy/backups/` and `.env` off the server regularly. Use `ADMIN_ALLOWED_IPS` in `.env` to restrict the admin
+domain to known IPs. All settings, plus troubleshooting, are in [`deploy/README.md`](deploy/README.md) and
+[`deploy/.env.example`](deploy/.env.example).
 
 ## Tests
 
